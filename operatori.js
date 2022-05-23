@@ -41,6 +41,17 @@ console.log(isChecked || isClose);
 console.log(isChecked || !isClose);
 
 
+//унарный плюс
+const x = 1,
+	y = -1;
+console.log(+x);//1
+console.log(+y);//-1
+console.log(+'');//0
+console.log(+true);//1
+console.log(+false);//0
+console.log(+'hello');//NaN
+
+
 
 
 
