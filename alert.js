@@ -1,4 +1,4 @@
-"use sсtrict";
+"use strict";
 
 alert("hello");
 
