@@ -18,3 +18,6 @@ answers[1]=prompt('Как ваша фамилия,', '');
 answers[2]=prompt('Сколько вам лет,', '');
 
 document.write(answers);
+
+
+
