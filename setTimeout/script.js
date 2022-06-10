@@ -19,6 +19,7 @@ function myAnimation() {
 	}
 }
 
+//Заметка
 btn.addEventListener('click', myAnimation);
 
 	// btn.addEventListener('click', () => {
