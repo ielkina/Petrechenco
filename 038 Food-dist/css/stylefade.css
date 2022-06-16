@@ -13,10 +13,10 @@
 
 @keyframes fade {
    form {
-      opacity: 10%;
+      opacity: 0.1;
    }
 
    to {
-      opacity: 100%;
+      opacity: 1;
    }
 }
