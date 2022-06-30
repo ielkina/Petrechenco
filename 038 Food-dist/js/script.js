@@ -54,15 +54,16 @@ window.addEventListener("DOMContentLoaded", () => {
       'seconds': seconds,
     };
   }
-  function getZero(num) {  
-    if (num >=0 && num < 10){
-      return`0${num}`;
-    }else{
+
+  function getZero(num) {
+    if (num >= 0 && num < 10) {
+      return `0${num}`;
+    } else {
       return num;
     }
   }
 
-  function setClock(selector, endtime){
+  function setClock(selector, endtime) {
     const timer = document.querySelector(selector),
       days = timer.querySelector('#days'),
       hours = timer.querySelector('#hours'),
@@ -72,17 +73,52 @@ window.addEventListener("DOMContentLoaded", () => {
 
     updateClock();
 
-    function updateClock (){
+    function updateClock() {
       const t = getTimeRemaining(endtime);
       days.innerHTML = getZero(t.days);
       hours.innerHTML = getZero(t.hours);
       minutes.innerHTML = getZero(t.minutes);
       seconds.innerHTML = getZero(t.seconds);
 
-      if (t.total <= 0){
+      if (t.total <= 0) {
         clearInterval(timeInterval);
       }
     }
   }
   setClock('.timer', deadline);
+
+  //modal для одной кнопки(связаться с нами)
+  const modalTrigger = document.querySelectorAll('[data-modal]'),
+    modal = document.querySelector('.modal'),
+    modalCloseBtn = document.querySelector('[data-close]');
+  modalTrigger.forEach(btn => { //вызов всех модальных которое привязанно к нескольким элементам
+    btn.addEventListener('click', () => {
+      modal.classList.add('show');
+      modal.classList.remove('hide');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+  // modalTrigger.addEventListener('click', () => {
+  //   modal.classList.add('show'); //показывает  мод окно
+  //   modal.classList.remove('hide');
+  //   // modal.classList.toggle('show'); //запуск мод окна с помощью тогл
+  //   document.body.style.overflow = 'hidden'; //фиксирует страницу при открытии модального окна
+  // });
+  function closeModal() {
+    modal.classList.add('hide');
+    modal.classList.remove('show');
+    // modal.classList.toggle('show');
+    document.body.style.overflow = ''; //отменяет фиксацию
+  }
+  modalCloseBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.code === "Escape" && modal.classList.contains('show')) {
+      closeModal();
+    }
+  });
 });
