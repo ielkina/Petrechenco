@@ -208,4 +208,55 @@ window.addEventListener("DOMContentLoaded", () => {
     "menu__item",
     "big"
   ).render();
+
+  //forms отправка формы на сервер
+  const forms = document.querySelectorAll("form"); //получение всех форм на странице 
+  const massage = {
+    loading: "Загрузка",
+    success: "Спасибо! Скоро мы с Вами свяжемся",
+    failure: "Что-то пошло не так...",
+  };
+  forms.forEach(item => {
+    postData(item);
+  });
+
+  function postData(form) {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const statusMessage = document.createElement("div"); //создание тега сообщения
+      statusMessage.classList.add("status"); //добавление статуса сообщения
+      statusMessage.textContent = massage.loading; //показ текста статуса сообщения
+      form.append(statusMessage); //добавление сообщения на страницу
+
+      const request = new XMLHttpRequest();
+      request.open("POST", "server.php");
+
+      request.setRequestHeader("Content-type", "application/json");
+      const formData = new FormData(form);
+
+      const object = {};
+      formData.forEach(function (value, key) {
+        object[key] = value;
+      });
+      const json = JSON.stringify(object);
+
+      request.send(json); //отправка в формате json
+
+      // request.send(formData); //отправка в консоль
+
+      request.addEventListener("load", () => {
+        if (request.status === 200) {
+          console.log(request.response);
+          statusMessage.textContent = massage.success;
+          form.reset();
+          setTimeout(() => {
+            statusMessage.remove();
+          }, 2000);
+        } else {
+          statusMessage.textContent = massage.failure;
+        }
+      });
+    });
+  }
 });
