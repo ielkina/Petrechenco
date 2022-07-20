@@ -83,8 +83,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   //modal для одной кнопки(связаться с нами)
   const modalTrigger = document.querySelectorAll("[data-modal]"),
-    modal = document.querySelector(".modal"),
-    modalCloseBtn = document.querySelector("[data-close]");
+    modal = document.querySelector(".modal");
 
   function openModal() {
     modal.classList.add("show");
@@ -108,9 +107,9 @@ window.addEventListener("DOMContentLoaded", () => {
     // modal.classList.toggle('show');
     document.body.style.overflow = ""; //отменяет фиксацию
   }
-  modalCloseBtn.addEventListener("click", closeModal);
+  // modalCloseBtn.addEventListener("click", closeModal);
   modal.addEventListener("click", (e) => {
-    if (e.target === modal) {
+    if (e.target === modal || e.target.getAttribute('data-close') == '') {
       closeModal();
     }
   });
@@ -120,7 +119,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   });
   //вызов модального окна через определенное время
-  // const modalTimerId = setTimeout(openModal, 5000);
+  const modalTimerId = setTimeout(openModal, 50000);
   //вызов модального окна через прокрутку страницы
   function showModalByScroll() {
     if (
@@ -212,7 +211,7 @@ window.addEventListener("DOMContentLoaded", () => {
   //forms отправка формы на сервер
   const forms = document.querySelectorAll("form"); //получение всех форм на странице 
   const massage = {
-    loading: "Загрузка",
+    loading: "img/form/spinner.svg",
     success: "Спасибо! Скоро мы с Вами свяжемся",
     failure: "Что-то пошло не так...",
   };
@@ -224,10 +223,14 @@ window.addEventListener("DOMContentLoaded", () => {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
 
-      const statusMessage = document.createElement("div"); //создание тега сообщения
-      statusMessage.classList.add("status"); //добавление статуса сообщения
-      statusMessage.textContent = massage.loading; //показ текста статуса сообщения
-      form.append(statusMessage); //добавление сообщения на страницу
+      const statusMessage = document.createElement("img"); //создание тега сообщения
+      statusMessage.src = massage.loading; //добавление статуса сообщения
+      statusMessage.style.cssText = `
+      display: block;
+      margin: 0 auto;
+      `; //показ текста статуса сообщения
+      // form.append(statusMessage); //добавление сообщения на страницу
+      form.insertAdjacentElement('afterend', statusMessage);
 
       const request = new XMLHttpRequest();
       request.open("POST", "server.php");
@@ -248,15 +251,34 @@ window.addEventListener("DOMContentLoaded", () => {
       request.addEventListener("load", () => {
         if (request.status === 200) {
           console.log(request.response);
-          statusMessage.textContent = massage.success;
+          showThanksModal(massage.success);
           form.reset();
-          setTimeout(() => {
-            statusMessage.remove();
-          }, 2000);
+          statusMessage.remove();
         } else {
-          statusMessage.textContent = massage.failure;
+          showThanksModal(massage.failure);
         }
       });
     });
+  }
+
+  function showThanksModal(message) {
+    const prevModalDialog = document.querySelector('.modal__dialog');
+    prevModalDialog.classList.add('hide');
+    openModal();
+    const thanksModal = document.createElement('div');
+    thanksModal.classList.add('modal__dialog');
+    thanksModal.innerHTML = `
+    <div class="modal__content">
+  <div class="modal__close" data-close>&times;</div>
+  <div class="modal__title">${message}</div>
+  </div>`;
+
+    document.querySelector('.modal').append(thanksModal);
+    setTimeout(() => {
+      thanksModal.remove();
+      prevModalDialog.classList.add('show');
+      prevModalDialog.classList.remove('hide');
+      closeModal();
+    }, 4000)
   }
 });
