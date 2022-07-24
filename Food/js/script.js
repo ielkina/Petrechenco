@@ -109,7 +109,7 @@ window.addEventListener("DOMContentLoaded", () => {
   }
   // modalCloseBtn.addEventListener("click", closeModal);
   modal.addEventListener("click", (e) => {
-    if (e.target === modal || e.target.getAttribute('data-close') == '') {
+    if (e.target === modal || e.target.getAttribute("data-close") == "") {
       closeModal();
     }
   });
@@ -122,10 +122,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const modalTimerId = setTimeout(openModal, 50000);
   //вызов модального окна через прокрутку страницы
   function showModalByScroll() {
-    if (
-      window.pageYoffset + document.documentElement.clientHeight >=
-      document.documentElement.scrollHeight
-    ) {
+    if (window.pageYoffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
       openModal();
       window.removeEventListener("scroll", showModalByScroll);
     }
@@ -209,13 +206,13 @@ window.addEventListener("DOMContentLoaded", () => {
   ).render();
 
   //forms отправка формы на сервер
-  const forms = document.querySelectorAll("form"); //получение всех форм на странице 
+  const forms = document.querySelectorAll("form"); //получение всех форм на странице
   const massage = {
     loading: "img/form/spinner.svg",
     success: "Спасибо! Скоро мы с Вами свяжемся",
     failure: "Что-то пошло не так...",
   };
-  forms.forEach(item => {
+  forms.forEach((item) => {
     postData(item);
   });
 
@@ -230,55 +227,85 @@ window.addEventListener("DOMContentLoaded", () => {
       margin: 0 auto;
       `; //показ текста статуса сообщения
       // form.append(statusMessage); //добавление сообщения на страницу
-      form.insertAdjacentElement('afterend', statusMessage);
+      form.insertAdjacentElement("afterend", statusMessage);
 
-      const request = new XMLHttpRequest();
-      request.open("POST", "server.php");
+      // const request = new XMLHttpRequest();
+      // request.open("POST", "server.php");
 
-      request.setRequestHeader("Content-type", "application/json");
+      // request.setRequestHeader();
       const formData = new FormData(form);
 
       const object = {};
       formData.forEach(function (value, key) {
         object[key] = value;
       });
-      const json = JSON.stringify(object);
+      // const json = JSON.stringify(object);
 
-      request.send(json); //отправка в формате json
+      // request.send(json); //отправка в формате json
+      fetch("server.php", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(object),
+      })
+        .then((data) => data.text())
+        .then((data) => {
+          console.log(data);
+          showThanksModal(massage.success);
+          // form.reset();
+          statusMessage.remove();
+        })
+        .catch(() => {
+          showThanksModal(message.failure);
+        })
+        .finally(() => {
+          form.reset();
+        });
 
       // request.send(formData); //отправка в консоль
 
-      request.addEventListener("load", () => {
-        if (request.status === 200) {
-          console.log(request.response);
-          showThanksModal(massage.success);
-          form.reset();
-          statusMessage.remove();
-        } else {
-          showThanksModal(massage.failure);
-        }
-      });
+      // request.addEventListener("load", () => {
+      //   if (request.status === 200) {
+      //     console.log(request.response);
+      //     showThanksModal(massage.success);
+      //     form.reset();
+      //     statusMessage.remove();
+      //   } else {
+      //     showThanksModal(massage.failure);
+      //   }
+      // });
     });
   }
 
   function showThanksModal(message) {
-    const prevModalDialog = document.querySelector('.modal__dialog');
-    prevModalDialog.classList.add('hide');
+    const prevModalDialog = document.querySelector(".modal__dialog");
+    prevModalDialog.classList.add("hide");
     openModal();
-    const thanksModal = document.createElement('div');
-    thanksModal.classList.add('modal__dialog');
+    const thanksModal = document.createElement("div");
+    thanksModal.classList.add("modal__dialog");
     thanksModal.innerHTML = `
     <div class="modal__content">
-  <div class="modal__close" data-close>&times;</div>
-  <div class="modal__title">${message}</div>
-  </div>`;
+    <div class="modal__close" data-close>&times;</div>
+    <div class="modal__title">${message}</div>
+    </div>`;
 
-    document.querySelector('.modal').append(thanksModal);
+    document.querySelector(".modal").append(thanksModal);
     setTimeout(() => {
       thanksModal.remove();
-      prevModalDialog.classList.add('show');
-      prevModalDialog.classList.remove('hide');
+      prevModalDialog.classList.add("show");
+      prevModalDialog.classList.remove("hide");
       closeModal();
-    }, 4000)
+    }, 4000);
   }
+
+  // fetch('https://jsonplaceholder.typicode.com/posts', {
+  //   method: 'POST',
+  //   body: JSON.stringify({mane: 'Alex'}),
+  //   headers: {
+  //     'content-type': 'application/json'
+  //   }
+  // })
+  //   .then(response => response.json())
+  //   .then(json => console.log(json))
 });
